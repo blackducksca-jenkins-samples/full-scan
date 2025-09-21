@@ -8,7 +8,7 @@ on:
                                                                                                                                                                                                                                           
 jobs:
   blackduck-scan:
-    runs-on: ubuntu-latest
+    runs-on: mac-arm-sh
                                                                                                                                                                                                                                           
     steps:
     - uses: actions/checkout@v4
