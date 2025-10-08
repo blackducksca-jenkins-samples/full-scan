@@ -13,10 +13,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
                                                                                                                                                                                                                                           
-    - name: Use Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+    # - name: Use Node.js
+    #   uses: actions/setup-node@v3
+    #   with:
+    #     node-version: '18'
                                                                                                                                                                                                                                           
     - name: Build Project
       run: |
@@ -30,5 +30,6 @@ jobs:
         blackducksca_token: ${{ secrets.BLACKDUCK_TOKEN }}
         github_token: ${{ secrets.GITHUB_TOKEN }}
         detect_args: "--detect.source.path=${{ github.workspace }}/nodejs-npm"
+        detect.npm.path: "/Users/madhusud/.nvm/versions/node/v22.16.0/bin/npm"
       env:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
