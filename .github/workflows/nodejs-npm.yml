@@ -1,10 +1,10 @@
-name: Black Duck Full Scan
+name: Black Duck Scan
                                                                                                                                                                                                                                           
 on:
   push:
-    branches: [ main ]
+    branches: [main, master, develop, stage, release]
   pull_request:
-    branches: [ main ]
+    branches: [main, master, develop, stage, release]
                                                                                                                                                                                                                                           
 jobs:
   blackduck-scan:
@@ -18,16 +18,17 @@ jobs:
       with:
         node-version: '18'
                                                                                                                                                                                                                                           
-    - name: Install dependencies
+    - name: Build Project
       run: |
         cd nodejs-npm
         npm install
                                                                                                                                                                                                                                           
-    - name: Black Duck Full Scan
+    - name: Black Duck SCA Scan
       uses: blackduck-inc/black-duck-security-scan@v2
       with:
         blackducksca_url: ${{ secrets.BLACKDUCK_URL }}
         blackducksca_token: ${{ secrets.BLACKDUCK_TOKEN }}
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        detect_args: "--detect.source.path=${{ github.workspace }}/nodejs-npm"
       env:
         DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
