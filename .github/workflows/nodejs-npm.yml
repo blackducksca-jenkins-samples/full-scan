@@ -13,19 +13,31 @@ jobs:
     steps:
     - name: Checkout Source
       uses: actions/checkout@v4
-                                                                                                                                                                                                                                          
+
+    - name: List workspace contents
+      run: |
+        echo "Workspace directory: ${{ github.workspace }}"
+        ls -la ${{ github.workspace }} 
+        
     - name: Build Project
       run: |
-        cd nodejs-npm
+        cd ${{ github.workspace }}/nodejs-npm
         npm install
-                                                                                                                                                                                                                                          
-    - name: Black Duck SCA Build Sca
-      uses: blackduck-inc/black-duck-security-scan@v2
-      with:
-        blackducksca_url: ${{ secrets.BLACKDUCK_URL }}
-        blackducksca_token: ${{ secrets.BLACKDUCK_TOKEN }}
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        detect_args: "--detect.source.path=${{ github.workspace }}/nodejs-npm --detect.npm.path='/Users/madhusud/.nvm/versions/node/v22.16.0/bin/npm' "
+        npm run build --if-present
         
-      env:
-        DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
+    # - name: Build Project
+    #   run: |
+    #     cd nodejs-npm
+    #     npm install
+    #     npm run build --if-present
+                                                                                                                                                                                                                                          
+    # - name: Black Duck SCA Build Sca
+    #   uses: blackduck-inc/black-duck-security-scan@v2
+    #   with:
+    #     blackducksca_url: ${{ secrets.BLACKDUCK_URL }}
+    #     blackducksca_token: ${{ secrets.BLACKDUCK_TOKEN }}
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    #     detect_args: "--detect.source.path=${{ github.workspace }}/nodejs-npm --detect.npm.path='/Users/madhusud/.nvm/versions/node/v22.16.0/bin/npm' "
+        
+    #   env:
+    #     DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
