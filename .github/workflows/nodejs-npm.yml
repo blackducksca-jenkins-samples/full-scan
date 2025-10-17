@@ -28,10 +28,8 @@ jobs:
 
     - name: List workspace contents
       run: |
-        echo "Workspace directory: ${{ github.workspace }}"
-        ls -la ${{ github.workspace }}
-        echo "Current working directory: $(pwd)"
-        ls -la .
+        echo "Current directory: $(pwd)"
+        ls -la
 
     - name: Install dependencies
       run: npm install  # Use npm ci for faster, reliable installs
@@ -41,7 +39,11 @@ jobs:
         echo "Building the project"
         npm run build --if-present
 
-        
+    - name: List workspace contents after building the project
+      run: |
+        echo "Current directory: $(pwd)"
+        ls -la
+
     # - name: Build Project
     #   run: |
     #     cd nodejs-npm
