@@ -39,10 +39,10 @@ jobs:
         echo "Building the project"
         npm run build --if-present
 
-    - name: List workspace contents after building the project
-      run: |
-        echo "Current directory: $(pwd)"
-        ls -la
+    # - name: List workspace contents after building the project
+    #   run: |
+    #     echo "Current directory: $(pwd)"
+    #     ls -la
 
     # - name: Build Project
     #   run: |
@@ -50,13 +50,13 @@ jobs:
     #     npm install
     #     npm run build --if-present
                                                                                                                                                                                                                                           
-    # - name: Black Duck SCA Build Sca
-    #   uses: blackduck-inc/black-duck-security-scan@v2
-    #   with:
-    #     blackducksca_url: ${{ secrets.BLACKDUCK_URL }}
-    #     blackducksca_token: ${{ secrets.BLACKDUCK_TOKEN }}
-    #     github_token: ${{ secrets.GITHUB_TOKEN }}
-    #     detect_args: "--detect.source.path=${{ github.workspace }}/nodejs-npm --detect.npm.path='/Users/madhusud/.nvm/versions/node/v22.16.0/bin/npm' "
+    - name: Black Duck SCA Build Sca
+      uses: blackduck-inc/black-duck-security-scan@v2
+      with:
+        blackducksca_url: ${{ secrets.BLACKDUCK_URL }}
+        blackducksca_token: ${{ secrets.BLACKDUCK_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        #detect_args: "--detect.source.path=${{ github.workspace }}/nodejs-npm --detect.npm.path='/Users/madhusud/.nvm/versions/node/v22.16.0/bin/npm' "
         
-    #   env:
-    #     DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
+      env:
+        DETECT_PROJECT_NAME: ${{ github.event.repository.name }}
