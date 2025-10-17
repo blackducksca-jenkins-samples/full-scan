@@ -1,4 +1,4 @@
-name: Black Duck SCA Build Sca
+name: Black Duck SCA Build Scan
 
 on:
   push:
@@ -9,8 +9,7 @@ on:
 jobs:
   blackduck-scan:
     runs-on: [ mac-arm-sh ]
-    #timeout-minutes: 30  # Add explicit timeout
-
+    
     defaults:
       run:
         working-directory: ${{ github.workspace }}/nodejs-npm
@@ -32,25 +31,14 @@ jobs:
         ls -la
 
     - name: Install dependencies
-      run: npm install  # Use npm ci for faster, reliable installs
+      run: npm ci  # Use npm ci for faster, reliable installs
 
     - name: Build Project
       run: |
-        echo "Building the project"
-        npm run build --if-present
-
-    # - name: List workspace contents after building the project
-    #   run: |
-    #     echo "Current directory: $(pwd)"
-    #     ls -la
-
-    # - name: Build Project
-    #   run: |
-    #     cd nodejs-npm
-    #     npm install
-    #     npm run build --if-present
-                                                                                                                                                                                                                                          
-    - name: Black Duck SCA Build Sca
+        #npm run build --if-present
+        npm run build
+                                                                                                                                                                                                                                      
+    - name: Black Duck SCA Build Scan
       uses: blackduck-inc/black-duck-security-scan@v2
       with:
         blackducksca_url: ${{ secrets.BLACKDUCK_URL }}
