@@ -23,13 +23,14 @@ jobs:
         echo "Current directory: $(pwd)"
         ls -la
         
+    - name: Installing the dependencies
+      run: |
+        npm install
+        
     - name: Build Project
       run: |
-        echo "Installing the dependencies"
-        npm install
-        echo "Building the project"
         npm run build --if-present
-
+        
     - name: List workspace contents After Build
       run: |
         echo "Current directory: $(pwd)"
