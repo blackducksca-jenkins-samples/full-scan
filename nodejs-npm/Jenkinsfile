@@ -6,23 +6,21 @@ pipeline {
 
    stages {
         
-       
-        stage("Load Library") {
-            steps {
-                script {
-                    // Load library dynamically
-                    library "${env.JENKINS_SHARED_LIB_PATH}"
-                }
-            }
-        }
-       
-       
        stage('Check Environment') {
             steps {
                 script {
                     echo "JENKINS_HOME: ${env.JENKINS_HOME}"
                     echo "All environment variables:"
                     sh 'env | grep JENKINS || echo "No JENKINS variables found"'
+                }
+            }
+        } 
+       
+       stage("Load Library") {
+            steps {
+                script {
+                    // Load library dynamically
+                    library "${env.JENKINS_SHARED_LIB_PATH}"
                 }
             }
         }
