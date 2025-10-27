@@ -1,4 +1,4 @@
-@Library('file:///Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library') _
+//@Library('file:///Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library') _
 
 
 pipeline {
@@ -9,15 +9,15 @@ pipeline {
 
    stages {
         
-       stage('Check Environment') {
-            steps {
-                script {
-                    echo "JENKINS_HOME: ${env.JENKINS_HOME}"
-                    echo "All environment variables:"
-                    sh 'env | grep JENKINS || echo "No JENKINS variables found"'
-                }
-            }
-        } 
+       // stage('Check Environment') {
+       //      steps {
+       //          script {
+       //              echo "JENKINS_HOME: ${env.JENKINS_HOME}"
+       //              echo "All environment variables:"
+       //              sh 'env | grep JENKINS || echo "No JENKINS variables found"'
+       //          }
+       //      }
+       //  } 
        
        // stage("Load Library") {
        //      steps {
@@ -37,36 +37,43 @@ pipeline {
             }
             steps {
                 script {
-                    dir('nodejs-npm') {
-                        sh 'node --version'
-                        sh 'npm --version'
-                        sh 'npm install'
+
+                    // Print environment variables for debugging
+                    echo "JOB_NAME: ${env.JOB_NAME}"
+                    echo "JOB_BASE_NAME: ${env.JOB_BASE_NAME}"
+                    echo "BRANCH_NAME: ${env.BRANCH_NAME}"
+                    echo "GIT_URL: ${env.GIT_URL}"
+                    
+                    // dir('nodejs-npm') {
+                    //     sh 'node --version'
+                    //     sh 'npm --version'
+                    //     sh 'npm install'
                         
-                    }
+                    // }
                 }
             }
         }
 
-        stage("blackduck-security-scan") {
-            when {
-                anyOf {
-                    branch 'main'
-                    branch pattern: "PR-\\d+", comparator: "REGEXP"
-                }
-            }
-            steps {
-                script {
-                    // Run scan from nodejs-npm directory
-                    dir('nodejs-npm') {
-                        security_scan blackducksca_scan_full: true, 
-                                     blackducksca_waitForScan: true, 
-                                     include_diagnostics: true, 
-                                     mark_build_status: 'FAILURE', 
-                                     product: 'blackducksca'
-                    }
-                }
-            }
-        }
+        // stage("blackduck-security-scan") {
+        //     when {
+        //         anyOf {
+        //             branch 'main'
+        //             branch pattern: "PR-\\d+", comparator: "REGEXP"
+        //         }
+        //     }
+        //     steps {
+        //         script {
+        //             // Run scan from nodejs-npm directory
+        //             dir('nodejs-npm') {
+        //                 security_scan blackducksca_scan_full: true, 
+        //                              blackducksca_waitForScan: true, 
+        //                              include_diagnostics: true, 
+        //                              mark_build_status: 'FAILURE', 
+        //                              product: 'blackducksca'
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     
