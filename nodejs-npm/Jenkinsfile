@@ -1,4 +1,4 @@
-//@Library('file:///Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library') _
+@Library('file:///Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library') _
 
 
 pipeline {
@@ -58,6 +58,14 @@ pipeline {
         }
 
        
+    }
+
+    post {
+        always {
+            script {
+                saveLogsToGitHub('nodejs-npm')
+            }
+        }
     }
 
     
