@@ -2,20 +2,23 @@ pipeline {
     agent { label 'mac-sh' }
 
     stages {
-        stage("Test Load Methods") {
+        stage("Test Fixed Load") {
             steps {
                 script {
                     try {
-                        // Method 1: Load and return
-                        echo "Testing load method..."
-                        def script1 = load('/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/simpleTest.groovy')
-                        echo "Script1 result: ${script1}"
+                        echo "Testing fixed load method..."
+                        def testFunc = load('/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/simpleTest.groovy')
+                        echo "Loaded function: ${testFunc}"
 
-                        // Method 2: Load and call immediately
-                        load('/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/simpleTest.groovy').call()
+                        if (testFunc != null) {
+                            testFunc()
+                            echo "✅ Function call successful!"
+                        } else {
+                            echo "❌ Function is still null"
+                        }
 
                     } catch (Exception e) {
-                        echo "Load failed: ${e.message}"
+                        echo "Error: ${e.message}"
                     }
                 }
             }
