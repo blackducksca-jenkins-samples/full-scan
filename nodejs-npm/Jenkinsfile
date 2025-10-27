@@ -2,16 +2,18 @@ pipeline {
     agent { label 'mac-sh' }
 
     stages {
-        stage("Load External Script") {
+        stage("Test Direct Function") {
             steps {
                 script {
-                    // Load the script and store it in a variable
-                    def simpleTestScript = load '/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/simpleTest.groovy'
+                    // Define the function inline to test
+                    def simpleTest = {
+                        echo "✅ Simple test function works!"
+                    }
 
-                    echo "Script loaded successfully"
+                    // Call the function
+                    simpleTest()
 
-                    // Call the function through the loaded script
-                    simpleTestScript.call()
+                    echo "✅ Direct function call works!"
                 }
             }
         }
