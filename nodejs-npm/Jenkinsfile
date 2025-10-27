@@ -2,30 +2,46 @@ pipeline {
     agent { label 'mac-sh' }
 
     stages {
-        stage("Test Jenkins Native HTTP") {
+        stage("Build") {
             steps {
                 script {
-                    try {
-                        echo "🔍 Testing Jenkins native HTTP with credentials..."
+                    echo "JOB_NAME: ${env.JOB_NAME}"
 
-                        def consoleUrl = "${env.BUILD_URL}consoleText"
-
-                        // Use Jenkins native HTTP with credentials
-                        withCredentials([usernamePassword(credentialsId: 'jenkins-user-token', usernameVariable: 'USERNAME', passwordVariable: 'API_TOKEN')]) {
-                            def logContent = sh(
-                                script: "curl -s --user \"\$USERNAME:\$API_TOKEN\" '${consoleUrl}' | head -20",
-                                returnStdout: true
-                            )
-
-                            echo "✅ Native Jenkins HTTP successful!"
-                            echo "Log content preview:"
-                            echo "${logContent}"
-                        }
-
-                    } catch (Exception e) {
-                        echo "❌ Jenkins native HTTP failed: ${e.message}"
+                    dir('nodejs-npm') {
+                        sh 'node --version'
+                        sh 'npm --version'
+                        sh 'npm install'
                     }
                 }
+            }
+        }
+
+        stage("blackduck-security-scan") {
+            steps {
+                script {
+                    dir('nodejs-npm') {
+                        def projectName = env.JOB_NAME.split('/')[0]
+                        echo "DETECT_PROJECT_NAME will be set to: ${projectName}"
+
+                        withEnv(["DETECT_PROJECT_NAME=${projectName}"]) {
+                            security_scan blackducksca_scan_full: true, 
+                                         blackducksca_waitForScan: true, 
+                                         include_diagnostics: true, 
+                                         mark_build_status: 'FAILURE', 
+                                         product: 'blackducksca'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Load and call the complete log function
+                def saveLogsFunc = load('/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/saveLogsToGitHub.groovy')
+                saveLogsFunc('nodejs-npm')
             }
         }
     }
