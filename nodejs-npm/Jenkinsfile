@@ -1,4 +1,4 @@
-@Library('file:///Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library') _
+@Library('file:/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library') _
 
 pipeline {
     agent { label 'mac-sh' }
