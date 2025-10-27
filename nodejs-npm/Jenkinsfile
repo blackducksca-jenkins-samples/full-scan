@@ -2,32 +2,28 @@ pipeline {
     agent { label 'mac-sh' }
 
     stages {
-        stage("Test API Token Access") {
+        stage("Test Jenkins Native HTTP") {
             steps {
                 script {
                     try {
-                        echo "🔍 Testing Jenkins API token access..."
+                        echo "🔍 Testing Jenkins native HTTP with credentials..."
 
-                        // Use credentials securely
-                        withCredentials([string(credentialsId: 'jenkins-api-token', variable: 'API_TOKEN')]) {
-                            def consoleUrl = "${env.BUILD_URL}consoleText"
-                            def username = "admin" // Replace with your Jenkins username
+                        def consoleUrl = "${env.BUILD_URL}consoleText"
 
-                            echo "Testing authenticated console access..."
-
-                            // Test authenticated curl request
+                        // Use Jenkins native HTTP with credentials
+                        withCredentials([usernamePassword(credentialsId: 'jenkins-user-token', usernameVariable: 'USERNAME', passwordVariable: 'API_TOKEN')]) {
                             def logContent = sh(
-                                script: "curl -s -u '${username}:${API_TOKEN}' '${consoleUrl}' | head -20",
+                                script: "curl -s --user \"\$USERNAME:\$API_TOKEN\" '${consoleUrl}' | head -20",
                                 returnStdout: true
                             )
 
-                            echo "✅ API Token authentication successful!"
-                            echo "Log content preview (first 20 lines):"
+                            echo "✅ Native Jenkins HTTP successful!"
+                            echo "Log content preview:"
                             echo "${logContent}"
                         }
 
                     } catch (Exception e) {
-                        echo "❌ API Token test failed: ${e.message}"
+                        echo "❌ Jenkins native HTTP failed: ${e.message}"
                     }
                 }
             }
