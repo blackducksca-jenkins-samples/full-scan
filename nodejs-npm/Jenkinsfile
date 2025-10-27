@@ -1,3 +1,6 @@
+@Library('file:///Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library') _
+
+
 pipeline {
 
     agent{
@@ -16,54 +19,54 @@ pipeline {
             }
         } 
        
-       stage("Load Library") {
-            steps {
-                script {
-                    // Load library dynamically
-                    library "${env.JENKINS_SHARED_LIB_PATH}"
-                }
-            }
-        }
-       
-       // stage("Build") {
-       //      when {
-       //          anyOf {
-       //              branch 'main'
-       //              branch pattern: "PR-\\d+", comparator: "REGEXP"
-       //          }
-       //      }
+       // stage("Load Library") {
        //      steps {
        //          script {
-       //              dir('nodejs-npm') {
-       //                  sh 'node --version'
-       //                  sh 'npm --version'
-       //                  sh 'npm install'
-                        
-       //              }
+       //              // Load library dynamically
+       //              library "${env.JENKINS_SHARED_LIB_PATH}"
        //          }
        //      }
        //  }
+       
+       stage("Build") {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch pattern: "PR-\\d+", comparator: "REGEXP"
+                }
+            }
+            steps {
+                script {
+                    dir('nodejs-npm') {
+                        sh 'node --version'
+                        sh 'npm --version'
+                        sh 'npm install'
+                        
+                    }
+                }
+            }
+        }
 
-        // stage("blackduck-security-scan") {
-        //     when {
-        //         anyOf {
-        //             branch 'main'
-        //             branch pattern: "PR-\\d+", comparator: "REGEXP"
-        //         }
-        //     }
-        //     steps {
-        //         script {
-        //             // Run scan from nodejs-npm directory
-        //             dir('nodejs-npm') {
-        //                 security_scan blackducksca_scan_full: true, 
-        //                              blackducksca_waitForScan: true, 
-        //                              include_diagnostics: true, 
-        //                              mark_build_status: 'FAILURE', 
-        //                              product: 'blackducksca'
-        //             }
-        //         }
-        //     }
-        // }
+        stage("blackduck-security-scan") {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch pattern: "PR-\\d+", comparator: "REGEXP"
+                }
+            }
+            steps {
+                script {
+                    // Run scan from nodejs-npm directory
+                    dir('nodejs-npm') {
+                        security_scan blackducksca_scan_full: true, 
+                                     blackducksca_waitForScan: true, 
+                                     include_diagnostics: true, 
+                                     mark_build_status: 'FAILURE', 
+                                     product: 'blackducksca'
+                    }
+                }
+            }
+        }
     }
 
     
