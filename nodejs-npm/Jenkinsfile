@@ -1,13 +1,23 @@
-library identifier: 'blackduck-shared-library@master', 
-        retrieval: localSource('/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library')
-
 pipeline {
     agent { label 'mac-sh' }
 
     stages {
-        stage("Test") {
+        stage("Load External Script") {
             steps {
                 script {
+                    // Try loading the groovy file directly
+                    def saveLogsScript = load '/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/saveLogsToGitHub.groovy'
+
+                    // Test if it loaded
+                    echo "Script loaded successfully"
+                }
+            }
+        }
+
+        stage("Test Function") {
+            steps {
+                script {
+                    // Try calling the function
                     simpleTest()
                 }
             }
