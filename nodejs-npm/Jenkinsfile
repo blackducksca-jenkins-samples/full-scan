@@ -1,6 +1,5 @@
 @Library('file:///Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library') _
 
-
 pipeline {
 
     agent{
