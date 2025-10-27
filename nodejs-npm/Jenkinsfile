@@ -5,20 +5,13 @@ pipeline {
         stage("Load External Script") {
             steps {
                 script {
-                    // Try loading the groovy file directly
-                    def saveLogsScript = load '/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/simpleTest.groovy'
+                    // Load the script and store it in a variable
+                    def simpleTestScript = load '/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/simpleTest.groovy'
 
-                    // Test if it loaded
                     echo "Script loaded successfully"
-                }
-            }
-        }
 
-        stage("Test Function") {
-            steps {
-                script {
-                    // Try calling the function
-                    simpleTest()
+                    // Call the function through the loaded script
+                    simpleTestScript.call()
                 }
             }
         }
