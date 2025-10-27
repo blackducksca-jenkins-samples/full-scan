@@ -6,7 +6,7 @@ pipeline {
             steps {
                 script {
                     // Try loading the groovy file directly
-                    def saveLogsScript = load '/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/saveLogsToGitHub.groovy'
+                    def saveLogsScript = load '/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/simpleTest.groovy'
 
                     // Test if it loaded
                     echo "Script loaded successfully"
