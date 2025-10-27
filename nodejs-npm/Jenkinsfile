@@ -2,58 +2,25 @@ pipeline {
     agent { label 'mac-sh' }
 
     stages {
-        stage("Build") {
+        stage("Test Load Methods") {
             steps {
                 script {
-                    echo "JOB_NAME: ${env.JOB_NAME}"
+                    try {
+                        // Method 1: Load and return
+                        echo "Testing load method..."
+                        def script1 = load('/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/simpleTest.groovy')
+                        echo "Script1 result: ${script1}"
 
-                    dir('nodejs-npm') {
-                        sh 'node --version'
-                        sh 'npm --version'
-                        sh 'npm install'
-                    }
-                }
-            }
-        }
+                        // Method 2: Load and call immediately
+                        load('/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/simpleTest.groovy').call()
 
-        stage("blackduck-security-scan") {
-            steps {
-                script {
-                    dir('nodejs-npm') {
-                        def projectName = env.JOB_NAME.split('/')[0]
-                        echo "DETECT_PROJECT_NAME will be set to: ${projectName}"
-
-                        withEnv(["DETECT_PROJECT_NAME=${projectName}"]) {
-                            security_scan blackducksca_scan_full: true, 
-                                         blackducksca_waitForScan: true, 
-                                         include_diagnostics: true, 
-                                         mark_build_status: 'FAILURE', 
-                                         product: 'blackducksca'
-                        }
+                    } catch (Exception e) {
+                        echo "Load failed: ${e.message}"
                     }
                 }
             }
         }
     }
-
-    post {
-        always {
-            script {
-                saveLogsToGitHub('nodejs-npm')
-            }
-        }
-    }
-}
-
-def saveLogsToGitHub(String projectType) {
-    echo "🔄 Starting log capture for ${projectType}..."
-
-    def timestamp = new Date().format('yyyy-MM-dd-HH-mm-ss')
-    def buildNum = env.BUILD_NUMBER
-    def logFileName = "${projectType}-${timestamp}-${buildNum}.txt"
-
-    echo "📝 Would create log file: ${logFileName}"
-    echo "✅ Log capture function works!"
 }
 
 // @Library('file:///Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library') _
