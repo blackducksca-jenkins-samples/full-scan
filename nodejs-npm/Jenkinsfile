@@ -2,48 +2,86 @@ pipeline {
     agent { label 'mac-sh' }
 
     stages {
-        stage("Test Console URL Format") {
+        stage("Test API Token Access") {
             steps {
                 script {
                     try {
-                        echo "🔍 Testing different console URL formats..."
+                        echo "🔍 Testing Jenkins API token access..."
 
-                        // Display environment variables first
-                        echo "BUILD_URL: ${env.BUILD_URL}"
-                        echo "BUILD_NUMBER: ${env.BUILD_NUMBER}"
-                        echo "JOB_URL: ${env.JOB_URL}"
+                        // Use credentials securely
+                        withCredentials([string(credentialsId: 'jenkins-api-token', variable: 'API_TOKEN')]) {
+                            def consoleUrl = "${env.BUILD_URL}consoleText"
+                            def username = "admin" // Replace with your Jenkins username
 
-                        // Test different URL formats
-                        def consoleUrl1 = "${env.BUILD_URL}consoleText"
-                        def consoleUrl2 = "${env.BUILD_URL}console"
-                        def consoleUrl3 = "${env.BUILD_URL}consoleFull"
+                            echo "Testing authenticated console access..."
 
-                        echo "Format 1 (consoleText): ${consoleUrl1}"
-                        echo "Format 2 (console): ${consoleUrl2}"
-                        echo "Format 3 (consoleFull): ${consoleUrl3}"
+                            // Test authenticated curl request
+                            def logContent = sh(
+                                script: "curl -s -u '${username}:${API_TOKEN}' '${consoleUrl}' | head -20",
+                                returnStdout: true
+                            )
 
-                        // Test with curl to see which format works
-                        echo "Testing consoleText format..."
-                        def result1 = sh(script: "curl -s -I '${consoleUrl1}' | head -1", returnStdout: true)
-                        echo "consoleText response: ${result1}"
-
-                        echo "Testing console format..."
-                        def result2 = sh(script: "curl -s -I '${consoleUrl2}' | head -1", returnStdout: true)
-                        echo "console response: ${result2}"
-
-                        // Try to get actual content from the working URL
-                        echo "Getting first few lines of console output..."
-                        def content = sh(script: "curl -s '${consoleUrl1}' | head -5", returnStdout: true)
-                        echo "Console content preview: ${content}"
+                            echo "✅ API Token authentication successful!"
+                            echo "Log content preview (first 20 lines):"
+                            echo "${logContent}"
+                        }
 
                     } catch (Exception e) {
-                        echo "❌ URL test failed: ${e.message}"
+                        echo "❌ API Token test failed: ${e.message}"
                     }
                 }
             }
         }
     }
 }
+
+
+// pipeline {
+//     agent { label 'mac-sh' }
+
+//     stages {
+//         stage("Test Console URL Format") {
+//             steps {
+//                 script {
+//                     try {
+//                         echo "🔍 Testing different console URL formats..."
+
+//                         // Display environment variables first
+//                         echo "BUILD_URL: ${env.BUILD_URL}"
+//                         echo "BUILD_NUMBER: ${env.BUILD_NUMBER}"
+//                         echo "JOB_URL: ${env.JOB_URL}"
+
+//                         // Test different URL formats
+//                         def consoleUrl1 = "${env.BUILD_URL}consoleText"
+//                         def consoleUrl2 = "${env.BUILD_URL}console"
+//                         def consoleUrl3 = "${env.BUILD_URL}consoleFull"
+
+//                         echo "Format 1 (consoleText): ${consoleUrl1}"
+//                         echo "Format 2 (console): ${consoleUrl2}"
+//                         echo "Format 3 (consoleFull): ${consoleUrl3}"
+
+//                         // Test with curl to see which format works
+//                         echo "Testing consoleText format..."
+//                         def result1 = sh(script: "curl -s -I '${consoleUrl1}' | head -1", returnStdout: true)
+//                         echo "consoleText response: ${result1}"
+
+//                         echo "Testing console format..."
+//                         def result2 = sh(script: "curl -s -I '${consoleUrl2}' | head -1", returnStdout: true)
+//                         echo "console response: ${result2}"
+
+//                         // Try to get actual content from the working URL
+//                         echo "Getting first few lines of console output..."
+//                         def content = sh(script: "curl -s '${consoleUrl1}' | head -5", returnStdout: true)
+//                         echo "Console content preview: ${content}"
+
+//                     } catch (Exception e) {
+//                         echo "❌ URL test failed: ${e.message}"
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
 
 // @Library('file:///Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library') _
 
