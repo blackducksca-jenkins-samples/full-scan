@@ -1,5 +1,3 @@
-@Library("${env.JENKINS_SHARED_LIB_PATH}") _
-
 pipeline {
 
     agent{
@@ -8,6 +6,17 @@ pipeline {
 
    stages {
         
+       
+        stage("Load Library") {
+            steps {
+                script {
+                    // Load library dynamically
+                    library "${env.JENKINS_SHARED_LIB_PATH}"
+                }
+            }
+        }
+       
+       
        stage('Check Environment') {
             steps {
                 script {
