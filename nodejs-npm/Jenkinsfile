@@ -4,26 +4,31 @@ pipeline {
         label 'mac-sh'
     }
 
-    when {
-        anyOf {
-            branch 'main'
-            branch pattern: "PR-\\d+", comparator: "REGEXP"
-        }
-    }
-
-    stages {
+   stages {
         stage("Build") {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch pattern: "PR-\\d+", comparator: "REGEXP"
+                }
+            }
             steps {
                 script {
+                    // Node.js build steps
                     sh 'node --version'
                     sh 'npm --version'
                     sh 'npm install'
-                    sh 'npm rebuild'
                 }
             }
         }
 
-        stage("blackducksca-security-scan") {
+        stage("blackduck-security-scan") {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch pattern: "PR-\\d+", comparator: "REGEXP"
+                }
+            }
             steps {
                 script {
                     security_scan blackducksca_scan_full: true, 
