@@ -2,46 +2,32 @@ pipeline {
     agent { label 'mac-sh' }
 
     stages {
-        stage("Build") {
+        stage("Test HTTP Request") {
             steps {
                 script {
-                    echo "JOB_NAME: ${env.JOB_NAME}"
+                    try {
+                        echo "🔍 Testing HTTP request capability..."
 
-                    dir('nodejs-npm') {
-                        sh 'node --version'
-                        sh 'npm --version'
-                        sh 'npm install'
+                        // Get console URL
+                        def consoleUrl = "${env.BUILD_URL}consoleText"
+                        echo "Console URL: ${consoleUrl}"
+
+                        // Test if httpRequest step is available
+                        echo "Testing httpRequest step availability..."
+
+                        // Simple HTTP test (this will tell us if httpRequest works)
+                        def response = httpRequest url: consoleUrl
+
+                        echo "✅ HTTP request successful!"
+                        echo "Response status: ${response.status}"
+                        echo "Response content length: ${response.content.length()}"
+                        echo "First 200 characters: ${response.content.substring(0, Math.min(200, response.content.length()))}"
+
+                    } catch (Exception e) {
+                        echo "❌ HTTP request failed: ${e.message}"
+                        echo "Error class: ${e.class.name}"
                     }
                 }
-            }
-        }
-
-        stage("blackduck-security-scan") {
-            steps {
-                script {
-                    dir('nodejs-npm') {
-                        def projectName = env.JOB_NAME.split('/')[0]
-                        echo "DETECT_PROJECT_NAME will be set to: ${projectName}"
-
-                        withEnv(["DETECT_PROJECT_NAME=${projectName}"]) {
-                            security_scan blackducksca_scan_full: true, 
-                                         blackducksca_waitForScan: true, 
-                                         include_diagnostics: true, 
-                                         mark_build_status: 'FAILURE', 
-                                         product: 'blackducksca'
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            script {
-                // Load and call the log function
-                def saveLogsFunc = load('/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/saveLogsToGitHub.groovy')
-                saveLogsFunc('nodejs-npm')
             }
         }
     }
