@@ -2,22 +2,58 @@ pipeline {
     agent { label 'mac-sh' }
 
     stages {
-        stage("Test Direct Function") {
+        stage("Build") {
             steps {
                 script {
-                    // Define the function inline to test
-                    def simpleTest = {
-                        echo "✅ Simple test function works!"
+                    echo "JOB_NAME: ${env.JOB_NAME}"
+
+                    dir('nodejs-npm') {
+                        sh 'node --version'
+                        sh 'npm --version'
+                        sh 'npm install'
                     }
+                }
+            }
+        }
 
-                    // Call the function
-                    simpleTest()
+        stage("blackduck-security-scan") {
+            steps {
+                script {
+                    dir('nodejs-npm') {
+                        def projectName = env.JOB_NAME.split('/')[0]
+                        echo "DETECT_PROJECT_NAME will be set to: ${projectName}"
 
-                    echo "✅ Direct function call works!"
+                        withEnv(["DETECT_PROJECT_NAME=${projectName}"]) {
+                            security_scan blackducksca_scan_full: true, 
+                                         blackducksca_waitForScan: true, 
+                                         include_diagnostics: true, 
+                                         mark_build_status: 'FAILURE', 
+                                         product: 'blackducksca'
+                        }
+                    }
                 }
             }
         }
     }
+
+    post {
+        always {
+            script {
+                saveLogsToGitHub('nodejs-npm')
+            }
+        }
+    }
+}
+
+def saveLogsToGitHub(String projectType) {
+    echo "🔄 Starting log capture for ${projectType}..."
+
+    def timestamp = new Date().format('yyyy-MM-dd-HH-mm-ss')
+    def buildNum = env.BUILD_NUMBER
+    def logFileName = "${projectType}-${timestamp}-${buildNum}.txt"
+
+    echo "📝 Would create log file: ${logFileName}"
+    echo "✅ Log capture function works!"
 }
 
 // @Library('file:///Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library') _
