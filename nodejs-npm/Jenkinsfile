@@ -41,7 +41,8 @@ pipeline {
         always {
             pushJenkinsLogsToGitHub([
                 githubOrg: 'blackducksca-jenkins-samples',
-                repoName: 'full-scan'
+                repoName: 'full-scan',
+                retentionCount: 5
             ])
         }
     }
