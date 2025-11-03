@@ -1,3 +1,5 @@
+@Library('blackduck-logs-publisher') _
+
 pipeline {
     agent { label 'mac-sh' }
 
@@ -38,11 +40,9 @@ pipeline {
 
     post {
         always {
-            script {
-                // Load and call the complete log function
-                def saveLogsFunc = load('/Users/madhusud/.jenkins/workflow-libs/blackduck-shared-library/vars/saveLogsToGitHub.groovy')
-                saveLogsFunc('nodejs-npm')
-            }
+            pushJenkinsLogsToGitHub([
+                githubOrg: 'blackducksca-jenkins-samples'
+            ])
         }
     }
 }
